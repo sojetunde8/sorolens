@@ -19,15 +19,17 @@ func (r *statusRecorder) WriteHeader(code int) {
 	r.ResponseWriter.WriteHeader(code)
 }
 
-// Hijack delegates to the underlying writer so protocol upgrades (WebSocket
-// handshake in the /subscribe handler) work through the logger middleware.
-func (r *statusRecorder) Hijack() (net.Conn, *bufio.ReadWriter, error) {
-	h, ok := r.ResponseWriter.(http.Hijacker)
-	if !ok {
-		return nil, nil, errors.New("middleware: underlying ResponseWriter does not implement http.Hijacker")
+// Flush forwards to the underlying writer so SSE handlers behind Logger can
+// still stream; without it the w.(http.Flusher) assertion fails.
+func (r *statusRecorder) Flush() {
+	if f, ok := r.ResponseWriter.(http.Flusher); ok {
+		f.Flush()
 	}
-	return h.Hijack()
 }
+
+// Unwrap lets http.ResponseController reach the underlying writer, e.g. to
+// extend the write deadline for streams and pprof profiles.
+func (r *statusRecorder) Unwrap() http.ResponseWriter { return r.ResponseWriter }
 
 // Logger logs each request with method, path, status, duration, and request ID.
 func Logger(logger *slog.Logger) func(http.Handler) http.Handler {
