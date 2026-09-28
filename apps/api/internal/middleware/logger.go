@@ -1,10 +1,7 @@
 package middleware
 
 import (
-	"bufio"
-	"errors"
 	"log/slog"
-	"net"
 	"net/http"
 	"time"
 )

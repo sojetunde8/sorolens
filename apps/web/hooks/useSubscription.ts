@@ -59,12 +59,8 @@ export function useSubscription(options: UseSubscriptionOptions = {}) {
   const subscribedRef = useRef(false);
 
   function sendSubscribe(socket: WebSocket) {
-    const filter = filterRef.current
-      ? { contract_id: filterRef.current }
-      : {};
-    socket.send(
-      JSON.stringify({ op: "subscribe", id: SUBSCRIBE_ID, filter }),
-    );
+    const filter = filterRef.current ? { contract_id: filterRef.current } : {};
+    socket.send(JSON.stringify({ op: "subscribe", id: SUBSCRIBE_ID, filter }));
   }
 
   useEffect(() => {
