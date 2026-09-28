@@ -3922,13 +3922,13 @@ paths:
         - ApiKeyAuth: [read:contracts]
       responses:
         "101":
-          description:
+          description: >-
             WebSocket protocol upgrade. JSON text frames: client sends
             `{"op":"subscribe","id":"<id>","filter":{"contract_id":"C1"}}`,
             `{"op":"unsubscribe","id":"<id>"}` or `{"op":"ping"}`; server replies
             with `{"type":"connected"}`, `{"op":"subscribed","id":...}`,
-            `{"op":"unsubscribed","id":...}`, `{"op":"error","error":...}` and
-            pushes `{"type":"event","contract_id":...,"event":{...}}`,
+            `{"op":"error","error":...}` and pushes
+            `{"type":"event","contract_id":...,"event":{...}}`,
             `{"type":"alert",...}` and `{"type":"heartbeat"}`.
           content:
             text/plain:
