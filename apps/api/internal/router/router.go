@@ -307,14 +307,18 @@ func New(h *handler.Handler, maxBodyBytes int64) http.Handler {
 		// API keys (admin scope + admin role).
 		r.With(scope, admin).Get("/api-keys", h.ListAPIKeys)
 		r.With(scope, admin).Post("/api-keys", h.CreateAPIKey)
+		r.With(scope, admin).Get("/api-keys/{id}", h.GetAPIKey)
 		r.With(scope, admin).Delete("/api-keys/{id}", h.RevokeAPIKey)
+		r.With(scope, admin).Post("/api-keys/{id}/rotate", h.RotateAPIKey)
 
 		// Admin surface. Wrapped by role admin so contributors cannot reach
 		// these endpoints even when the API key carries admin scope.
 		r.With(admin).Route("/admin", func(r chi.Router) {
 			r.Get("/keys", h.ListAPIKeys)
 			r.Post("/keys", h.CreateAPIKey)
+			r.Get("/keys/{id}", h.GetAPIKey)
 			r.Delete("/keys/{id}", h.RevokeAPIKey)
+			r.Post("/keys/{id}/rotate", h.RotateAPIKey)
 			r.Get("/audit", h.ListAuditEvents)
 		})
 
@@ -367,6 +371,14 @@ func New(h *handler.Handler, maxBodyBytes int64) http.Handler {
 		get("/reports/{contract_id}", h.GetContractReport)
 		get("/reports/{contract_id}/history", h.GetContractReportHistory)
 		get("/reports/{contract_id}/badge.svg", h.GetContractSLABadge)
+
+		// Email digest subscriptions (issue #330). Self-service by email with
+		// no login: the one-click unsubscribe link must work straight from an
+		// inbox, so these are public like the rest of the read/write surface.
+		r.With(scope).Post("/reports/subscriptions", h.CreateReportSubscription)
+		get("/reports/subscriptions", h.ListReportSubscriptions)
+		r.With(scope).Delete("/reports/subscriptions/{id}", h.DeleteReportSubscription)
+		get("/reports/unsubscribe", h.UnsubscribeReport)
 
 		// Alert notification subscriptions (issue #127). They hold
 		// integration secrets, so reading them also needs contributor.
@@ -422,13 +434,17 @@ func New(h *handler.Handler, maxBodyBytes int64) http.Handler {
 		// are declared passthrough in docs/api-v2.md.
 		r.With(scope, admin).Get("/api-keys", h.ListAPIKeys)
 		r.With(scope, admin).Post("/api-keys", h.CreateAPIKey)
+		r.With(scope, admin).Get("/api-keys/{id}", h.GetAPIKey)
 		r.With(scope, admin).Delete("/api-keys/{id}", h.RevokeAPIKey)
+		r.With(scope, admin).Post("/api-keys/{id}/rotate", h.RotateAPIKey)
 
 		// Admin surface, mirroring v1 so v2 has a 1:1 route map.
 		r.With(admin).Route("/admin", func(r chi.Router) {
 			r.Get("/keys", h.ListAPIKeys)
 			r.Post("/keys", h.CreateAPIKey)
+			r.Get("/keys/{id}", h.GetAPIKey)
 			r.Delete("/keys/{id}", h.RevokeAPIKey)
+			r.Post("/keys/{id}/rotate", h.RotateAPIKey)
 		})
 
 		// Watchlist

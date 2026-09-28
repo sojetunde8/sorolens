@@ -2,10 +2,12 @@ import type { Metadata, Viewport } from "next";
 import { Suspense } from "react";
 import "./globals.css";
 import { NavigationProgress } from "@/components/NavigationProgress";
+import { PlausibleAnalytics } from "@/components/PlausibleAnalytics";
 import { ThemeProvider } from "@/components/ThemeProvider";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://sorolens.dev"),
+  manifest: "/manifest.json",
   title: {
     default: "Sorolens — Indexed Observability for Soroban",
     template: "%s | Sorolens",
@@ -79,6 +81,7 @@ export default function RootLayout({
             `,
           }}
         />
+        <PlausibleAnalytics />
       </head>
       <body className="min-h-screen antialiased">
         <ThemeProvider>

@@ -10,11 +10,11 @@ from typing_extensions import Self
 
 from ..types import UNSET, Unset
 
-T = TypeVar("T", bound="APIKey")
+T = TypeVar("T", bound="V2AdminRotateKeyResponse200")
 
 
 @_attrs_define
-class APIKey:
+class V2AdminRotateKeyResponse200:
     """
     Attributes:
         id (str):
@@ -24,6 +24,7 @@ class APIKey:
         created_at (datetime.datetime):
         last_used_at (datetime.datetime | None):
         revoked_at (datetime.datetime | None):
+        key (str):
         rotated_at (datetime.datetime | None | Unset): When the key's secret was last rotated in place.
     """
 
@@ -34,6 +35,7 @@ class APIKey:
     created_at: datetime.datetime
     last_used_at: datetime.datetime | None
     revoked_at: datetime.datetime | None
+    key: str
     rotated_at: datetime.datetime | None | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
@@ -60,6 +62,8 @@ class APIKey:
         else:
             revoked_at = self.revoked_at
 
+        key = self.key
+
         rotated_at: None | str | Unset
         if isinstance(self.rotated_at, Unset):
             rotated_at = UNSET
@@ -79,6 +83,7 @@ class APIKey:
                 "created_at": created_at,
                 "last_used_at": last_used_at,
                 "revoked_at": revoked_at,
+                "key": key,
             }
         )
         if rotated_at is not UNSET:
@@ -129,6 +134,8 @@ class APIKey:
 
         revoked_at = _parse_revoked_at(d.pop("revoked_at"))
 
+        key = d.pop("key")
+
         def _parse_rotated_at(data: object) -> datetime.datetime | None | Unset:
             if data is None:
                 return data
@@ -146,7 +153,7 @@ class APIKey:
 
         rotated_at = _parse_rotated_at(d.pop("rotated_at", UNSET))
 
-        api_key = cls(
+        v2_admin_rotate_key_response_200 = cls(
             id=id,
             name=name,
             key_prefix=key_prefix,
@@ -154,11 +161,12 @@ class APIKey:
             created_at=created_at,
             last_used_at=last_used_at,
             revoked_at=revoked_at,
+            key=key,
             rotated_at=rotated_at,
         )
 
-        api_key.additional_properties = d
-        return api_key
+        v2_admin_rotate_key_response_200.additional_properties = d
+        return v2_admin_rotate_key_response_200
 
     @property
     def additional_keys(self) -> list[str]:
