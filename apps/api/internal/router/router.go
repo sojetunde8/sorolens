@@ -300,6 +300,15 @@ func New(h *handler.Handler, maxBodyBytes int64) http.Handler {
 		// write scope passes on the public surface.
 		r.With(scope, contributor).Post("/contracts/{id}/tags", h.AddContractTag)
 		r.With(scope, contributor).Delete("/contracts/{id}/tags/{tag}", h.RemoveContractTag)
+
+		// Markdown notes on a contract (issue #164). Reads stay open like the
+		// rest of the v0.1 surface; authoring needs the contributor role, and
+		// the handlers additionally restrict edits and deletes to the identity
+		// that wrote the note.
+		get("/contracts/{id}/notes", h.ListContractNotes)
+		r.With(scope, contributor).Post("/contracts/{id}/notes", h.CreateContractNote)
+		r.With(scope, contributor).Patch("/contracts/{id}/notes/{noteID}", h.UpdateContractNote)
+		r.With(scope, contributor).Delete("/contracts/{id}/notes/{noteID}", h.DeleteContractNote)
 		// Dead-letter queue for events that failed processing (issue #202).
 		get("/dlq", h.ListFailedEvents)
 		r.With(scope, contributor).Post("/dlq/{id}/requeue", h.RequeueFailedEvent)

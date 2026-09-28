@@ -37,6 +37,7 @@ import { ResourceTrendChart } from "@/components/ResourceTrendChart";
 import { getResourceTrend } from "@/lib/resourceTrend";
 import { EventsTable } from "@/components/EventsTable";
 import { StoragePanel } from "@/components/StoragePanel";
+import { ContractNotesPanel } from "@/components/ContractNotesPanel";
 import { SnapshotPanel } from "@/components/SnapshotPanel";
 import { HealthScoreCard } from "@/components/HealthScoreCard";
 import { AddToGroup } from "@/components/AddToGroup";
@@ -484,6 +485,11 @@ function ContractDetailContent({ id }: { id: string }) {
       <section className="mb-8">
         <h2 className="mb-4 text-xl font-semibold">Call trace</h2>
         <CallTracePanel initialTxHash={events[0]?.tx_hash} />
+      </section>
+
+      <section className="mb-8">
+        <h2 className="mb-4 text-xl font-semibold">Notes</h2>
+        <ContractNotesPanel contractId={id} />
       </section>
 
       <section className="mb-8">

@@ -141,6 +141,32 @@ type ContractTagStore interface {
 	ListContractTags(ctx context.Context, contractID string) ([]string, error)
 }
 
+// ContractNoteStore is the read/write surface for markdown notes attached to a
+// tracked contract (issue #164). A note records the kind of context that
+// otherwise lives in a chat thread: why a contract was upgraded, who owns it,
+// what was migrated when.
+type ContractNoteStore interface {
+	// AddContractNote appends a note authored by author and returns the stored
+	// row with its server-assigned id and timestamps.
+	AddContractNote(ctx context.Context, contractID, author, body string) (ContractNote, error)
+
+	// GetContractNote returns one note scoped to its contract, or ErrNotFound
+	// when the contract has no such note.
+	GetContractNote(ctx context.Context, contractID, noteID string) (ContractNote, error)
+
+	// ListContractNotes returns a contract's notes newest first. A contract
+	// with no notes yields an empty, non-nil slice.
+	ListContractNotes(ctx context.Context, contractID string) ([]ContractNote, error)
+
+	// UpdateContractNote replaces a note body and returns the updated row, or
+	// ErrNotFound. The author is never reassigned.
+	UpdateContractNote(ctx context.Context, contractID, noteID, body string) (ContractNote, error)
+
+	// DeleteContractNote removes a note. Deleting a note that is not present is
+	// a no-op, so a retried delete succeeds.
+	DeleteContractNote(ctx context.Context, contractID, noteID string) error
+}
+
 // WatchlistStore is the interface for per-user watchlist (bookmark) operations.
 type WatchlistStore interface {
 	// AddToWatchlist adds a contract to a user's watchlist.

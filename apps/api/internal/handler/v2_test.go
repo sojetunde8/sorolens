@@ -293,6 +293,14 @@ func TestV2CoversEveryV1Route(t *testing.T) {
 		// Contract tags (issue #459): contributor-scoped writes with no v2 twin.
 		"POST /api/v1/contracts/{id}/tags":         true,
 		"DELETE /api/v1/contracts/{id}/tags/{tag}": true,
+		// Contract notes (issue #164): the same contributor-scoped write surface
+		// as tags above, plus the reads that go with it, and no v2 twin for the
+		// same reason — the note document has no v2 envelope defined. Declared
+		// here alongside tags so the two stay in step.
+		"GET /api/v1/contracts/{id}/notes":             true,
+		"POST /api/v1/contracts/{id}/notes":            true,
+		"PATCH /api/v1/contracts/{id}/notes/{noteID}":  true,
+		"DELETE /api/v1/contracts/{id}/notes/{noteID}": true,
 		// Wasm binary download (#162): raw application/wasm bytes, not a JSON
 		// document, so it has no meaning under the v2 envelope. The v2
 		// contract surface keeps its JSON twins only.

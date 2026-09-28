@@ -62,6 +62,15 @@ var routeScopes = map[string]string{
 
 	"GET /api/v1/events": ScopeReadContracts,
 
+	// Markdown notes on a contract (issue #164): reads are open, authoring
+	// needs the contributor role, and the handlers restrict edits to the
+	// note's own author. Kept as its own block because the note patterns are
+	// longer than the contract patterns above.
+	"GET /api/v1/contracts/{id}/notes":             ScopeReadContracts,
+	"POST /api/v1/contracts/{id}/notes":            ScopeWriteContracts,
+	"PATCH /api/v1/contracts/{id}/notes/{noteID}":  ScopeWriteContracts,
+	"DELETE /api/v1/contracts/{id}/notes/{noteID}": ScopeWriteContracts,
+
 	"GET /api/v1/invocations/{tx_hash}/trace": ScopeReadContracts,
 
 	"GET /api/v1/rules":           ScopeReadContracts,

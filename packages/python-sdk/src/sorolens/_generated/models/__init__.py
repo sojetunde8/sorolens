@@ -35,6 +35,9 @@ from .contract_event_rate import ContractEventRate
 from .contract_graph import ContractGraph
 from .contract_graph_edges_type_0_item import ContractGraphEdgesType0Item
 from .contract_graph_nodes_type_0_item import ContractGraphNodesType0Item
+from .contract_note import ContractNote
+from .contract_note_list import ContractNoteList
+from .contract_note_request import ContractNoteRequest
 from .contract_report import ContractReport
 from .contract_snapshot import ContractSnapshot
 from .contract_snapshot_export import ContractSnapshotExport
@@ -308,6 +311,9 @@ __all__ = (
     "ContractGraph",
     "ContractGraphEdgesType0Item",
     "ContractGraphNodesType0Item",
+    "ContractNote",
+    "ContractNoteList",
+    "ContractNoteRequest",
     "ContractReport",
     "ContractSnapshot",
     "ContractSnapshotExport",

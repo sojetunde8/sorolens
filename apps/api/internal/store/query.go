@@ -24,6 +24,7 @@ type FullStore interface {
 	ContractUpgradeStore
 	ContractSpecStore
 	ContractTagStore
+	ContractNoteStore
 	HealthScoreStore
 	APIKeyStore
 	ReportSubscriptionStore

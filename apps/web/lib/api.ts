@@ -4,6 +4,8 @@ import type {
   BatchContractsRequest,
   BatchContractsResponse,
   ContractDetail,
+  ContractNote,
+  ContractNotesResponse,
   CompareResponse,
   ContractSnapshot,
   ContractSummary,
@@ -844,4 +846,61 @@ export function listRuleMetrics(): Promise<RuleCatalogResponse> {
 
 export function listRuleLibrary(): Promise<RuleLibraryResponse> {
   return fetchJson<RuleLibraryResponse>(`${API_URL}/api/v1/rules/library`);
+}
+
+// ---- contract notes (issue #164) -------------------------------------------
+
+/** Lists a contract's notes, newest first. */
+export function listContractNotes(id: string): Promise<ContractNotesResponse> {
+  return fetchJson<ContractNotesResponse>(
+    `${API_URL}/api/v1/contracts/${id}/notes`
+  );
+}
+
+/**
+ * Adds a markdown note. Authoring requires a contributor identity, so the
+ * browser identity is forwarded as X-User-ID like the tag and watchlist calls.
+ */
+export function createContractNote(
+  id: string,
+  body: string,
+  userId: string
+): Promise<ContractNote> {
+  return fetchJson<ContractNote>(`${API_URL}/api/v1/contracts/${id}/notes`, {
+    method: "POST",
+    body: JSON.stringify({ body }),
+    headers: { "X-User-ID": userId },
+  });
+}
+
+/** Rewrites a note. The API only accepts this from the note's author. */
+export function updateContractNote(
+  contractId: string,
+  noteId: string,
+  body: string,
+  userId: string
+): Promise<ContractNote> {
+  return fetchJson<ContractNote>(
+    `${API_URL}/api/v1/contracts/${contractId}/notes/${noteId}`,
+    {
+      method: "PATCH",
+      body: JSON.stringify({ body }),
+      headers: { "X-User-ID": userId },
+    }
+  );
+}
+
+/** Deletes a note. Only the author may delete it; deleting twice is a no-op. */
+export function deleteContractNote(
+  contractId: string,
+  noteId: string,
+  userId: string
+): Promise<void> {
+  return fetchNoContent(
+    `${API_URL}/api/v1/contracts/${contractId}/notes/${noteId}`,
+    {
+      method: "DELETE",
+      headers: { "X-User-ID": userId },
+    }
+  );
 }

@@ -661,3 +661,23 @@ export interface RulePreview {
   points?: RulePreviewPoint[];
   errors?: RuleDiagnostic[];
 }
+
+// ---- contract notes (#164) --------------------------------------------------
+
+/** One markdown note attached to a tracked contract. */
+export interface ContractNote {
+  id: string;
+  contract_id: string;
+  /** Identity that wrote the note; only they may change it. */
+  author: string;
+  /** Markdown source. Rendered client-side by lib/markdown.ts. */
+  body: string;
+  created_at: string;
+  updated_at: string;
+}
+
+/** Response of GET /api/v1/contracts/{id}/notes. */
+export interface ContractNotesResponse {
+  contract_id: string;
+  notes: ContractNote[];
+}

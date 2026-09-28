@@ -43,6 +43,7 @@ type MockStore struct {
 	contractSpecs         map[string]ContractSpec
 	contractVerifications map[string]ContractVerification
 	alertRules            []AlertRule
+	contractNotes         map[string][]ContractNote
 	watchedAccounts       map[string]WatchedAccount
 
 	// auditMu guards auditEvents: the audit middleware writes asynchronously.

@@ -110,11 +110,11 @@ type GroupStore interface {
 
 // ---- shared helpers ---------------------------------------------------------
 
-// newGroupID returns a random RFC 4122 version 4 UUID. Group IDs are generated
-// in the application so the in-memory mock and postgres backends share the
-// same shape; the migration keeps a gen_random_uuid() default for callers that
+// newUUID returns a random RFC 4122 version 4 UUID. UUID ids are generated in
+// the application so the in-memory mock and the postgres backend share the
+// same shape; the migrations keep a gen_random_uuid() default for callers that
 // insert rows directly.
-func newGroupID() string {
+func newUUID() string {
 	var b [16]byte
 	if _, err := rand.Read(b[:]); err != nil {
 		// crypto/rand does not fail on supported platforms; fall back to a
@@ -125,6 +125,10 @@ func newGroupID() string {
 	b[8] = (b[8] & 0x3f) | 0x80 // variant 10
 	return fmt.Sprintf("%x-%x-%x-%x-%x", b[0:4], b[4:6], b[6:8], b[8:10], b[10:16])
 }
+
+// newGroupID returns a UUID for a new group: the groups table declares a uuid
+// primary key.
+func newGroupID() string { return newUUID() }
 
 // validGroupName trims and length-checks a candidate group name.
 func validGroupName(name string) (string, bool) {
