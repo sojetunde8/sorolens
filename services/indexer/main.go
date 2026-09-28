@@ -19,6 +19,7 @@ import (
 	"github.com/sorolens/sorolens/services/indexer/internal/coordinator"
 	"github.com/sorolens/sorolens/services/indexer/internal/metrics"
 	"github.com/sorolens/sorolens/services/indexer/internal/poller"
+	"github.com/sorolens/sorolens/services/indexer/internal/rulesengine"
 	"github.com/sorolens/sorolens/services/indexer/internal/watchdog"
 )
 
@@ -112,6 +113,13 @@ func main() {
 	}
 
 	p := poller.NewWithRPCClients(clients, st, redis, cfg, log)
+
+	// User-defined alert rules. The stub store does not implement the rule
+	// surface, so this stays inert in local runs; a deployment that wires the
+	// real store gets rule evaluation at the end of every pass.
+	if rs, ok := any(st).(rulesengine.Store); ok {
+		p.SetRuleEvaluator(rulesengine.New(rs, log))
+	}
 
 	// Prometheus metrics (issue #198): the indexer exposes per-network lag on
 	// /metrics. The server is best-effort — a bind failure is logged but does
@@ -251,6 +259,10 @@ type watchdogInterceptor struct {
 	log      *slog.Logger
 }
 
+// Unwrap exposes the wrapped client so the poller can reach its optional
+// capabilities (getTransactions for contract discovery).
+func (w *watchdogInterceptor) Unwrap() poller.RPCClient { return w.RPCClient }
+
 func (w *watchdogInterceptor) GetEvents(ctx context.Context, start, end uint32, filters []poller.EventFilter) (*poller.GetEventsResult, error) {
 	res, err := w.RPCClient.GetEvents(ctx, start, end, filters)
 	if err != nil || res == nil || !w.enabled || w.contract == "" || w.store == nil {
@@ -350,6 +362,16 @@ func (s *stubRPC) GetContractWasmHash(_ context.Context, _ string) (string, erro
 	return "", nil
 }
 
+func (s *stubRPC) GetTransactions(ctx context.Context, startLedger uint32, cursor string, limit int) (*poller.GetTransactionsResult, error) {
+	if s.endpoint == "" {
+		return nil, fmt.Errorf("stub: RPC not wired")
+	}
+	return &poller.GetTransactionsResult{}, nil
+}
+
+// stubStore does not implement poller.DiscoveryStore yet, so contract
+// discovery (issue #123) stays off until the real FullStore is wired here,
+// like the watchdog surface above.
 type stubStore struct{}
 
 func (s *stubStore) ListContracts(ctx context.Context, cursor string, limit int) ([]poller.Contract, string, error) {

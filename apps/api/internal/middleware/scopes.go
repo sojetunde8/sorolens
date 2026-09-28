@@ -30,6 +30,8 @@ const (
 // present to hit that route. Routes absent from this table are unscoped
 // (e.g. /health, /readyz) and are reachable by any authenticated key.
 var routeScopes = map[string]string{
+	"POST /graphql": ScopeReadContracts,
+
 	"GET /api/v1/stats/global":   ScopeReadContracts,
 	"GET /api/v1/stats/activity": ScopeReadContracts,
 	"GET /api/v1/events/recent":  ScopeReadContracts,
@@ -60,12 +62,23 @@ var routeScopes = map[string]string{
 
 	"GET /api/v1/events": ScopeReadContracts,
 
-	"POST /api/v1/watchdog/subscriptions":        ScopeWriteContracts,
-	"GET /api/v1/watchdog/subscriptions":         ScopeReadWatchdog,
-	"DELETE /api/v1/watchdog/subscriptions/{id}": ScopeWriteContracts,
+	"GET /api/v1/invocations/{tx_hash}/trace": ScopeReadContracts,
+
+	"GET /api/v1/rules":           ScopeReadContracts,
+	"GET /api/v1/rules/metrics":   ScopeReadContracts,
+	"GET /api/v1/rules/library":   ScopeReadContracts,
+	"POST /api/v1/rules/validate": ScopeReadContracts,
+	"POST /api/v1/rules":          ScopeWriteContracts,
+	"POST /api/v1/rules/preview":  ScopeWriteContracts,
+	"PATCH /api/v1/rules/{id}":    ScopeWriteContracts,
+	"DELETE /api/v1/rules/{id}":   ScopeWriteContracts,
 
 	"GET /api/v1/dlq":               ScopeReadContracts,
 	"POST /api/v1/dlq/{id}/requeue": ScopeWriteContracts,
+
+	"POST /api/v1/watched-accounts":        ScopeWriteContracts,
+	"GET /api/v1/watched-accounts":         ScopeReadContracts,
+	"DELETE /api/v1/watched-accounts/{id}": ScopeWriteContracts,
 
 	"GET /api/v1/watchdog/stats":                 ScopeReadWatchdog,
 	"GET /api/v1/watchdog/alerts":                ScopeReadWatchdog,
@@ -73,6 +86,15 @@ var routeScopes = map[string]string{
 	"GET /api/v1/watchdog/contracts/{id}":        ScopeReadWatchdog,
 	"GET /api/v1/watchdog/contracts/{id}/health": ScopeReadWatchdog,
 	"GET /api/v1/watchdog/contracts/{id}/alerts": ScopeReadWatchdog,
+
+	// Subscriptions are watchdog-scoped for reads and write-scoped for
+	// mutations (with a contributor role via the router). The signing-secret
+	// reveal/rotate endpoints touch key material and stay admin-gated.
+	"GET /api/v1/watchdog/subscriptions":                     ScopeReadWatchdog,
+	"POST /api/v1/watchdog/subscriptions":                    ScopeWriteContracts,
+	"DELETE /api/v1/watchdog/subscriptions/{id}":             ScopeWriteContracts,
+	"GET /api/v1/watchdog/subscriptions/{id}/signing-secret": ScopeAdmin,
+	"POST /api/v1/watchdog/subscriptions/{id}/rotate":        ScopeAdmin,
 
 	"GET /api/v1/api-keys":         ScopeAdmin,
 	"POST /api/v1/api-keys":        ScopeAdmin,
