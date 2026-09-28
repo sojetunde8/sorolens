@@ -271,7 +271,9 @@ func TestV2CoversEveryV1Route(t *testing.T) {
 		"GET /api/v1/contracts/{id}/summary":       true,
 		"GET /api/v1/contracts/{id}/snapshot.json": true,
 		"GET /api/v1/stream/events":                true,
-		"GET /api/v1/watchdog/subscriptions":       true,
+		// WebSocket stream (issue #126): no v2 twin yet.
+		"GET /api/v1/subscribe":              true,
+		"GET /api/v1/watchdog/subscriptions": true,
 		// Cross-contract call graph (our addition): no v2 twin yet.
 		"GET /api/v1/invocations/{tx_hash}/trace": true,
 		// Signing-secret reveal/rotate (our addition): no v2 twin yet.

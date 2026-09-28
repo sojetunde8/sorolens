@@ -12,6 +12,7 @@ import (
 
 	"github.com/coder/websocket"
 
+	"github.com/sorolens/sorolens/apps/api/internal/config"
 	"github.com/sorolens/sorolens/apps/api/internal/handler"
 	"github.com/sorolens/sorolens/apps/api/internal/router"
 	"github.com/sorolens/sorolens/apps/api/internal/store"
@@ -29,7 +30,7 @@ func newWSServer(t *testing.T) (*httptest.Server, *handler.Handler) {
 		RedisClient: &mockRedisClient{},
 		Logger:      logger,
 	}
-	srv := httptest.NewServer(router.New(h))
+	srv := httptest.NewServer(router.New(h, config.DefaultRequestMaxBodyBytes))
 	t.Cleanup(srv.Close)
 	return srv, h
 }

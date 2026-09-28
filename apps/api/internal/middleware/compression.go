@@ -49,6 +49,7 @@ var excludedPathSuffixes = []string{
 	"/stream/events",
 	"/events/stream",
 	"/ws",
+	"/subscribe",
 }
 
 // Compression returns middleware that compresses responses with brotli or

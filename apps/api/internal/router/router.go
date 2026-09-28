@@ -203,6 +203,13 @@ func New(h *handler.Handler, maxBodyBytes int64) http.Handler {
 		// with its own long deadline; r is then rebound so every route
 		// registered below inherits the default cap and returns 503 past it.
 		r.With(scope, middleware.StreamTimeout(h.StreamTimeoutOrDefault())).Get("/stream/events", h.StreamEventsSSE)
+		// WebSocket subscriptions (issue #126): real-time push with live filter
+		// changes, complementary to the SSE stream above. Registered before the
+		// default Timeout rebind (it buffers responses, which breaks the upgrade
+		// handshake) and without StreamTimeout (its write deadline would cut
+		// hijacked connections); the handler enforces its own liveness via
+		// protocol heartbeats.
+		r.With(scope).Get("/subscribe", h.SubscribeEventsWS)
 		r = r.With(middleware.Timeout(h.RequestTimeoutOrDefault()))
 
 		get := func(pattern string, fn http.HandlerFunc) { r.With(scope).Get(pattern, fn) }
